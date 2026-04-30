@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Identity | Irrigation Hub Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        .auth-hero {
+            background: var(--bg-secondary);
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid var(--card-border);
+        }
+
+        .auth-form-side {
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .huge-auth-title {
+            font-size: 5rem;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .auth-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .auth-input-group label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        .auth-input-group input, .auth-input-group select {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 1rem 0;
+            font-size: 1.2rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-family: var(--font-sans);
+        }
+
+        .auth-input-group input:focus, .auth-input-group select:focus {
+            border-color: var(--text-main);
+            box-shadow: 0 1px 0 var(--text-main);
+        }
+
+        .auth-input-group select {
+            cursor: pointer;
+            padding-right: 0.5rem;
+            width: 100%;
+        }
+
+        .auth-input-group input::placeholder,
+        .auth-input-group select::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .auth-input-group input:hover:not(:focus),
+        .auth-input-group select:hover:not(:focus) {
+            border-bottom-color: var(--text-muted);
+        }
+
+        @media (max-width: 900px) {
+            .auth-layout { grid-template-columns: 1fr; }
+            .auth-hero { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-layout">
+        <section class="auth-hero">
+            <div style="padding: var(--spacing-lg);">
+                <div class="serif" style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 2rem; color: var(--text-muted);">REGISTRATION / 02</div>
+                <h1 class="huge-auth-title">Join <br> the <br> <span style="font-style: italic;">Network</span>.</h1>
+                <p style="color: var(--text-muted); max-width: 300px; font-size: 0.9rem;">Register your digital identity to start managing your agricultural estates with our intelligent protocols.</p>
+            </div>
+        </section>
+
+        <main class="auth-form-side">
+            <nav style="position: absolute; top: var(--spacing-md); right: var(--spacing-md); display: flex; gap: 2rem; align-items: center;">
+                <button id="theme-toggle" class="btn" style="border: none; font-size: 0.6rem; padding: 0;">Toggle Mood</button>
+                <a href="index.html" class="serif" style="text-decoration: none; color: var(--text-main); font-size: 1.2rem;">Irrigation Hub®</a>
+            </nav>
+            <script src="theme.js"></script>
+
+            <form id="register-form" class="auth-form">
+                <div class="auth-input-group">
+                    <label>Full Name / Identifier</label>
+                    <input type="text" id="name" required placeholder="John Doe">
+                </div>
+                <div class="auth-input-group">
+                    <label>Digital Identity / Email</label>
+                    <input type="email" id="email" required placeholder="farmer@estate.com">
+                </div>
+                <div class="auth-input-group">
+                    <label>Protocol / Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <div class="auth-input-group">
+                    <label>Role / Assignment</label>
+                    <select id="role" required>
+                        <option value="">Select your role</option>
+                        <option value="Farmer">Resident Farmer</option>
+                        <option value="Admin">Regional Admin</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 2rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Establish Identity</button>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; text-transform: uppercase; letter-spacing: 1px;">
+                        Already registered? <a href="login.html" style="color: var(--text-main); text-decoration: none; font-weight: 800; transition: opacity 0.3s ease; cursor: pointer;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Sign In</a>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="auth-ui.js"></script>
+</body>
+</html>

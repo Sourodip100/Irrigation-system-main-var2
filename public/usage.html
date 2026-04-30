@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Check Usage | Irrigation Hub</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .farmer-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    .side-nav {
+      border-right: 1px solid var(--card-border);
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .nav-header { margin-bottom: var(--spacing-lg); }
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .nav-list a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: color 0.3s;
+    }
+    .nav-list a.active, .nav-list a:hover { color: var(--text-main); }
+
+    .main-content { padding: var(--spacing-md); overflow-y: auto; }
+    .selector-wrap { max-width: 600px; margin-top: var(--spacing-lg); }
+
+    .form-group {
+      display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2.5rem;
+    }
+    .form-group label {
+      font-size: 0.6rem; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--text-muted);
+    }
+    .form-group select {
+      background: transparent; border: none;
+      border-bottom: 1px solid var(--card-border);
+      color: var(--text-main); padding: 1rem 0;
+      font-size: 1.2rem; outline: none;
+      transition: border-color 0.3s;
+      font-family: var(--font-sans); width: 100%; cursor: pointer;
+    }
+    .form-group select:focus {
+      border-color: var(--text-main);
+      box-shadow: 0 1px 0 var(--text-main);
+    }
+    .form-group select option { background: #111; color: #fff; }
+
+    .submit-btn {
+      background: transparent;
+      border: 1px solid var(--text-main);
+      color: var(--text-main);
+      padding: 1rem 2.5rem;
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 2px; cursor: pointer;
+      font-family: var(--font-sans); font-weight: 600;
+      transition: background 0.2s, color 0.2s; width: 100%;
+    }
+    .submit-btn:hover { background: var(--text-main); color: var(--bg-main); }
+    .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .hint {
+      font-size: 0.7rem; color: var(--text-muted);
+      margin-top: 1.5rem; line-height: 1.8;
+    }
+
+    .crop-preview {
+      margin-top: 3rem; padding-top: 2.5rem;
+      border-top: 1px solid var(--card-border);
+      display: none;
+    }
+    .crop-preview.visible { display: block; }
+    .crop-preview h3 {
+      font-family: var(--font-serif); font-size: 2rem;
+      font-weight: 300; margin-bottom: 1.5rem;
+    }
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+    }
+    .info-label {
+      font-size: 0.55rem; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.3rem;
+    }
+    .info-value { font-size: 0.95rem; }
+
+    .stage-row {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem;
+    }
+    .stage-name {
+      font-size: 0.58rem; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-muted); min-width: 55px;
+    }
+    .stage-track {
+      flex: 1; height: 2px; background: var(--card-border);
+    }
+    .stage-fill { height: 100%; background: var(--accent-primary); }
+    .stage-val {
+      font-size: 0.65rem; color: var(--text-muted); min-width: 100px; text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .farmer-layout { grid-template-columns: 1fr; }
+      .side-nav { height: auto; position: static; border-right: none; border-bottom: 1px solid var(--card-border); }
+    }
+  </style>
+</head>
+<body>
+<div class="farmer-layout">
+
+  <aside class="side-nav">
+    <div class="nav-header">
+      <div class="serif" style="font-size:1.2rem;margin-bottom:0.5rem;">Irrigation Hub®</div>
+      <div id="user-display" style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Farmer Profile</div>
+    </div>
+    <nav>
+      <ul class="nav-list">
+        <li><a href="farmer.html">Overview</a></li>
+        <li><a href="#">Add Field +</a></li>
+        <li><button id="theme-toggle" class="btn" style="border:none;font-size:0.6rem;padding:0.5rem 0;margin:1rem 0;display:block;">Toggle Mood</button></li>
+        <li><a href="index.html">Main Site</a></li>
+        <li><a href="#" id="logout-btn" style="color:#ef4444;">Sign Out</a></li>
+        <li><a href="usage.html" class="active">Check Usage</a></li>
+      </ul>
+    </nav>
+    <script src="theme.js"></script>
+  </aside>
+
+  <main class="main-content">
+    <header style="margin-bottom:var(--spacing-lg)">
+      <h1 style="font-size:3rem;">Water <span style="font-style:italic;">Usage.</span></h1>
+      <p style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:0.4rem;">
+        Select a crop to view detailed consumption analytics
+      </p>
+    </header>
+
+    <div class="selector-wrap">
+
+      <div class="form-group">
+        <label>Choose a Crop</label>
+        <select id="cropSelect">
+          <option value="">— Loading crops —</option>
+        </select>
+      </div>
+
+      <button class="submit-btn" id="goBtn" disabled onclick="goToAnalytics()">
+        View Analytics →
+      </button>
+
+      <p class="hint">
+        You will see daily water usage, efficiency score, irrigation session history,
+        comparison with other farmers, and full crop lifecycle breakdown.
+      </p>
+
+      <div class="crop-preview" id="cropPreview">
+        <h3 id="prevName">–</h3>
+        <div class="info-grid">
+          <div>
+            <div class="info-label">Soil Moisture Range</div>
+            <div class="info-value" id="prevMoisture">–</div>
+          </div>
+          <div>
+            <div class="info-label">Temperature Range</div>
+            <div class="info-value" id="prevTemp">–</div>
+          </div>
+          <div>
+            <div class="info-label">Total Lifecycle</div>
+            <div class="info-value" id="prevCycle">–</div>
+          </div>
+          <div>
+            <div class="info-label">Crop ID</div>
+            <div class="info-value" id="prevId" style="font-size:0.7rem;color:var(--text-muted)">–</div>
+          </div>
+        </div>
+
+        <div style="margin-top:2rem">
+          <div style="font-size:0.55rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:1.2rem;">
+            Water per Growth Stage (L/m²/day)
+          </div>
+          <div id="stageBars"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const API   = '/api';
+  const token = localStorage.getItem('token');
+  const user  = JSON.parse(localStorage.getItem('user'));
+
+  if (!token || !user) { window.location.href = 'login.html'; }
+  document.getElementById('user-display').textContent = `${user.name} / ${user.role}`;
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.clear(); window.location.href = 'login.html';
+  });
+
+  let allCrops = [];
+
+  async function loadCrops() {
+    const sel = document.getElementById('cropSelect');
+    try {
+      const res = await fetch(`${API}/crops`, { headers: { Authorization: `Bearer ${token}` } });
+      allCrops  = await res.json();
+
+      sel.innerHTML = '<option value="">— Select a crop —</option>';
+      allCrops.forEach(c => {
+        const totalDays = c.stages
+          ? c.stages.initial.days + c.stages.growth.days + c.stages.mid.days + c.stages.late.days : 0;
+        const opt = document.createElement('option');
+        opt.value       = c._id;
+        opt.textContent = `${c.name}  (${totalDays}-day cycle)`;
+        sel.appendChild(opt);
+      });
+    } catch (e) {
+      sel.innerHTML = '<option value="">Failed to load crops</option>';
+    }
+  }
+
+  document.getElementById('cropSelect').addEventListener('change', function () {
+    const cropId  = this.value;
+    const goBtn   = document.getElementById('goBtn');
+    const preview = document.getElementById('cropPreview');
+
+    if (!cropId) { goBtn.disabled = true; preview.classList.remove('visible'); return; }
+
+    goBtn.disabled = false;
+    const crop = allCrops.find(c => c._id === cropId);
+    if (!crop) return;
+
+    const totalDays = crop.stages
+      ? crop.stages.initial.days + crop.stages.growth.days + crop.stages.mid.days + crop.stages.late.days : 0;
+
+    document.getElementById('prevName').textContent    = crop.name;
+    document.getElementById('prevMoisture').textContent = `${crop.minMoisture}% – ${crop.maxMoisture}%`;
+    document.getElementById('prevTemp').textContent     = `${crop.temperatureRange.min}°C – ${crop.temperatureRange.max}°C`;
+    document.getElementById('prevCycle').textContent    = `${totalDays} days`;
+    document.getElementById('prevId').textContent       = crop._id;
+
+    if (crop.stages) {
+      const stages = [
+        { name:'Initial', water:crop.stages.initial.water, days:crop.stages.initial.days },
+        { name:'Growth',  water:crop.stages.growth.water,  days:crop.stages.growth.days  },
+        { name:'Mid',     water:crop.stages.mid.water,     days:crop.stages.mid.days     },
+        { name:'Late',    water:crop.stages.late.water,    days:crop.stages.late.days    },
+      ];
+      const maxW = Math.max(...stages.map(s => s.water));
+      document.getElementById('stageBars').innerHTML = stages.map(s => `
+        <div class="stage-row">
+          <div class="stage-name">${s.name}</div>
+          <div class="stage-track"><div class="stage-fill" style="width:${Math.round((s.water/maxW)*100)}%"></div></div>
+          <div class="stage-val">${s.water} L/m²/day · ${s.days} days</div>
+        </div>
+      `).join('');
+    }
+
+    preview.classList.add('visible');
+  });
+
+  function goToAnalytics() {
+    const cropId = document.getElementById('cropSelect').value;
+    if (!cropId) return;
+    window.location.href = `water-analytics.html?cropId=${cropId}`;
+  }
+
+  loadCrops();
+</script>
+</body>
+</html>

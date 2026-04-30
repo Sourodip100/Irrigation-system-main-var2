@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Water Analytics | Irrigation Hub</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    
+    .farmer-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    .side-nav {
+      border-right: 1px solid var(--card-border);
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .nav-header { margin-bottom: var(--spacing-lg); }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
+    .nav-list a {
+      text-decoration: none; color: var(--text-muted);
+      font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 2px; transition: color 0.3s;
+    }
+    .nav-list a.active, .nav-list a:hover { color: var(--text-main); }
+
+    .main-content { padding: var(--spacing-md); overflow-y: auto; }
+
+    /* Loader */
+    #loader {
+      position: fixed; inset: 0;
+      background: rgba(10,10,10,0.94);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.2rem; z-index: 999;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 2px solid var(--card-border);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loader span {
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--text-muted);
+    }
+
+    /* Range tabs */
+    .range-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: var(--spacing-lg); }
+    .range-bar label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); }
+    .rtab {
+      background: transparent; border: none;
+      border-bottom: 1px solid var(--card-border);
+      color: var(--text-muted); padding: 0.4rem 0.8rem;
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 1px; cursor: pointer;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; transition: color 0.2s, border-color 0.2s;
+    }
+    .rtab:hover { color: var(--text-main); border-color: var(--text-main); }
+    .rtab.active { color: var(--accent-primary); border-color: var(--accent-primary); }
+
+    /* Alert */
+    .alert-strip {
+      padding: 1rem 1.5rem; font-size: 0.75rem;
+      border-left: 2px solid var(--danger);
+      margin-bottom: var(--spacing-md); display: none;
+    }
+    .alert-strip.danger  { border-color:var(--danger);  background:rgba(239,68,68,0.06); }
+    .alert-strip.warning { border-color:var(--warning); background:rgba(245,158,11,0.06); }
+    .alert-strip.success { border-color:var(--success); background:rgba(16,185,129,0.06); }
+
+    /* KPI row */
+    .kpi-row {
+      display: grid; grid-template-columns: repeat(5,1fr);
+      border-top: 1px solid var(--card-border);
+      margin-bottom: var(--spacing-lg);
+    }
+    .kpi {
+      padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 0;
+      border-right: 1px solid var(--card-border);
+    }
+    .kpi:last-child { border-right: none; }
+    .kpi-label {
+      font-size: 0.55rem; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--text-muted);
+      display: block; margin-bottom: 0.8rem;
+    }
+    .kpi-value {
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 1.8rem;
+      font-weight: 300; line-height: 1;
+    }
+    .kpi-value.green { color: var(--success); }
+    .kpi-value.red   { color: var(--danger);  }
+    .kpi-value.amber { color: var(--warning); }
+    .kpi-note { font-size: 0.58rem; color: var(--text-muted); margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 0.8px; }
+    .kpi-note.up   { color: var(--success); }
+    .kpi-note.down { color: var(--danger);  }
+    .kpi-note.warn { color: var(--warning); }
+
+    /* Chart card */
+    .cc {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      padding: var(--spacing-md); margin-bottom: var(--spacing-md);
+    }
+    .cc-head {
+      font-size: 0.58rem; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--text-muted);
+      margin-bottom: var(--spacing-md);
+    }
+
+    /* Grids */
+    .g2   { display: grid; grid-template-columns: 1.8fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+    .g2r  { display: grid; grid-template-columns: 1fr 1.8fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+    .g2eq { display: grid; grid-template-columns: 1fr 1fr;   gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+    @media (max-width: 1000px) { .g2, .g2r, .g2eq { grid-template-columns: 1fr; } }
+
+    /* Gauge */
+    .gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0; }
+    .gauge-ring { position: relative; width: 160px; height: 160px; }
+    .gauge-inner {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -44%); text-align: center;
+    }
+    .gauge-pct {
+      font-family: var(--font-serif); font-size: 2rem;
+      font-weight: 300; line-height: 1; color: var(--accent-primary);
+    }
+    .gauge-sub { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 3px; }
+    .gauge-stats {
+      display: flex; gap: 2rem; margin-top: 1.5rem;
+      border-top: 1px solid var(--card-border); padding-top: 1.5rem;
+      width: 100%; justify-content: center;
+    }
+    .gs { text-align: center; }
+    .gs-val { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 300; }
+    .gs-lbl { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 3px; }
+
+    /* Session table */
+    .st { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .st th {
+      text-align: left; padding: 0.5rem 0.8rem;
+      font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--text-muted); border-bottom: 1px solid var(--card-border);
+    }
+    .st td { padding: 0.8rem; border-bottom: 1px solid var(--card-border); }
+    .st tr:last-child td { border-bottom: none; }
+    .st tr:hover td { background: rgba(255,255,255,0.02); }
+    .over  { color: var(--danger); }
+    .under { color: var(--warning); }
+    .ok    { color: var(--success); }
+    .nodata { padding: 2rem 0; text-align: center; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Donut */
+    .donut-layout { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+    .donut-stats  { flex: 1; min-width: 130px; display: flex; flex-direction: column; gap: 1rem; }
+    .drow { display: flex; justify-content: space-between; align-items: center; }
+    .dlbl { display: flex; align-items: center; gap: 0.6rem; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .ddot { width: 8px; height: 8px; border-radius: 1px; flex-shrink: 0; }
+    .dval { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 300; }
+
+    /* Compare */
+    .cmp-list  { display: flex; flex-direction: column; gap: 1.8rem; }
+    .cmp-meta  { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .cmp-lbl   { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+    .cmp-val   { font-size: 0.75rem; }
+    .cmp-track { width: 100%; height: 1px; background: var(--card-border); }
+    .cmp-fill  { height: 100%; transition: width 1.2s ease; }
+
+    /* Threshold cards */
+    .thresh-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: var(--spacing-md); margin-top: 1.5rem; }
+    @media (max-width: 700px) { .thresh-grid { grid-template-columns: repeat(2,1fr); } }
+    .tc {
+      border-top: 1px solid var(--card-border);
+      padding: var(--spacing-md) 0;
+    }
+    .tc-icon { font-size: 1.1rem; margin-bottom: 0.7rem; }
+    .tc-name { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .tc-val  { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 300; }
+    .tc-desc { font-size: 0.6rem; color: var(--text-muted); margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.8px; }
+
+    /* Legend */
+    .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+    .leg    { display: flex; align-items: center; gap: 5px; font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .leg-sq { width: 8px; height: 8px; border-radius: 1px; }
+
+    /* Lifecycle */
+    .lc-bar { display: flex; height: 6px; border-radius: 1px; overflow: hidden; margin-bottom: 0.6rem; }
+    .lc-labels { display: flex; font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+
+    @media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 700px)  { .kpi-row { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 900px) {
+      .farmer-layout { grid-template-columns: 1fr; }
+      .side-nav { height: auto; position: static; border-right: none; border-bottom: 1px solid var(--card-border); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <span>Syncing field data</span>
+</div>
+
+<div class="farmer-layout">
+
+  <aside class="side-nav">
+    <div class="nav-header">
+      <div class="serif" style="font-size:1.2rem;margin-bottom:0.5rem;">Irrigation Hub®</div>
+      <div id="user-display" style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Farmer Profile</div>
+    </div>
+    <nav>
+      <ul class="nav-list">
+        <li><a href="farmer.html">Overview</a></li>
+        <li><a href="#">Add Field +</a></li>
+        <li><button id="theme-toggle" class="btn" style="border:none;font-size:0.6rem;padding:0.5rem 0;margin:1rem 0;display:block;">Toggle Mood</button></li>
+        <li><a href="index.html">Main Site</a></li>
+        <li><a href="#" id="logout-btn" style="color:#ef4444;">Sign Out</a></li>
+        <li><a href="usage.html" class="active">Check Usage</a></li>
+      </ul>
+    </nav>
+    <script src="theme.js"></script>
+  </aside>
+
+  <main class="main-content">
+
+    <header style="margin-bottom:var(--spacing-lg)">
+      <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:0.5rem;">
+        <a href="usage.html" style="color:var(--text-muted);text-decoration:none;">← Usage</a>
+        &nbsp;/&nbsp;<span id="breadcrumb">–</span>
+      </div>
+      <h1 style="font-size:3rem" id="pageTitle">Analytics.</h1>
+      <p style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:0.4rem" id="pageSub">–</p>
+    </header>
+
+    <div class="alert-strip" id="alertBox">
+      <strong id="alertTitle"></strong><span id="alertMsg"></span>
+    </div>
+
+    <div class="range-bar">
+      <label>Period:</label>
+      <button class="rtab"        onclick="setRange(7,this)">7 Days</button>
+      <button class="rtab active" onclick="setRange(30,this)">30 Days</button>
+      <button class="rtab"        onclick="setRange(90,this)">90 Days</button>
+    </div>
+
+    <div class="kpi-row" id="kpiRow">
+      <div class="kpi"><span class="kpi-label">–</span><div class="kpi-value">–</div></div>
+      <div class="kpi"><span class="kpi-label">–</span><div class="kpi-value">–</div></div>
+      <div class="kpi"><span class="kpi-label">–</span><div class="kpi-value">–</div></div>
+      <div class="kpi"><span class="kpi-label">–</span><div class="kpi-value">–</div></div>
+      <div class="kpi"><span class="kpi-label">–</span><div class="kpi-value">–</div></div>
+    </div>
+
+    <!-- Line chart + Gauge -->
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-head">Daily Water Applied vs Optimal vs Platform Avg (Litres)</div>
+        <div class="legend" id="lineLegend" style="margin-bottom:1rem"></div>
+        <canvas id="lineChart" height="220"></canvas>
+      </div>
+      <div class="cc">
+        <div class="cc-head">Monthly Allocation Consumed</div>
+        <div class="gauge-wrap">
+          <div class="gauge-ring">
+            <canvas id="gaugeChart" width="160" height="160"></canvas>
+            <div class="gauge-inner">
+              <div class="gauge-pct" id="gaugePct">–</div>
+              <div class="gauge-sub">used</div>
+            </div>
+          </div>
+          <div class="gauge-stats">
+            <div class="gs"><div class="gs-val" id="gsUsed" style="color:var(--danger)">–</div><div class="gs-lbl">Used</div></div>
+            <div class="gs"><div class="gs-val" id="gsLeft" style="color:var(--success)">–</div><div class="gs-lbl">Left</div></div>
+            <div class="gs"><div class="gs-val" id="gsTotal">–</div><div class="gs-lbl">Allocated</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today sessions + Donut -->
+    <div class="g2r">
+      <div class="cc">
+        <div class="cc-head" id="todayHead">Today's Irrigation Sessions</div>
+        <div id="sessionArea"></div>
+      </div>
+      <div class="cc">
+        <div class="cc-head" id="donutHead">Day Quality Distribution — 30 Days</div>
+        <div class="donut-layout">
+          <div style="position:relative;width:160px;height:160px;flex-shrink:0">
+            <canvas id="donutChart" width="160" height="160"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+              <div style="font-family:var(--font-serif);font-size:1.8rem;font-weight:300" id="donutCenter">–</div>
+              <div style="font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)">optimal</div>
+            </div>
+          </div>
+          <div class="donut-stats" id="donutStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly + Compare -->
+    <div class="g2eq">
+      <div class="cc">
+        <div class="cc-head">Weekly Totals — Actual vs Optimal vs Platform Avg</div>
+        <canvas id="weeklyBar" height="220"></canvas>
+      </div>
+      <div class="cc">
+        <div class="cc-head">Platform Comparison — Avg Daily Litres</div>
+        <div class="cmp-list" id="cmpList" style="margin-top:1rem"></div>
+      </div>
+    </div>
+
+    <!-- Deviation -->
+    <div class="cc">
+      <div class="cc-head">Deviation from Optimal — Green = In Range · Red = Over-Water · Orange = Under-Water</div>
+      <canvas id="devChart" height="160"></canvas>
+    </div>
+
+    <!-- Crop lifecycle -->
+    <div class="cc" id="lifecycleCard">
+      <div class="cc-head">Crop Lifecycle & Water Requirements</div>
+      <div id="lifecycleContent"></div>
+    </div>
+
+    <!-- Threshold reference -->
+    <div class="cc" style="margin-bottom:var(--spacing-lg)">
+      <div class="cc-head" id="threshHead">Water Reference</div>
+      <div class="thresh-grid" id="threshGrid"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const API   = '/api';
+  const token = localStorage.getItem('token');
+  const user  = JSON.parse(localStorage.getItem('user'));
+
+  if (!token || !user) { window.location.href = 'login.html'; }
+  document.getElementById('user-display').textContent = `${user.name} / ${user.role}`;
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.clear(); window.location.href = 'login.html';
+  });
+
+  const cropId = new URLSearchParams(location.search).get('cropId');
+  let days = 30;
+
+  let cLine, cGauge, cDonut, cWeekly, cDev;
+
+  Chart.defaults.color           = 'rgba(255,255,255,0.35)';
+  Chart.defaults.font.family     = "'Inter', sans-serif";
+  Chart.defaults.font.size       = 10;
+  Chart.defaults.plugins.legend.display = false;
+
+  async function loadData() {
+    if (!cropId) { hideLoader(); showAlert('danger','No crop selected.',' Go back to Usage.'); return; }
+    try {
+      const res  = await fetch(`/api/usage/crop?cropId=${cropId}&days=${days}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      renderAll(data);
+    } catch (err) {
+      showAlert('danger', 'Error:', ' ' + err.message);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  function hideLoader() { document.getElementById('loader').style.display = 'none'; }
+
+  function setRange(d, btn) {
+    days = d;
+    document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('donutHead').textContent = `Day Quality Distribution — ${d} Days`;
+    document.getElementById('loader').style.display = 'flex';
+    loadData();
+  }
+
+  function renderAll(data) {
+    const { crop, allocation, today, chart_data, weekly, summary } = data;
+
+    document.title = `${crop.name} Analytics | Irrigation Hub`;
+    document.getElementById('breadcrumb').textContent = crop.name;
+    document.getElementById('pageTitle').innerHTML    = `${crop.name} <em>Usage.</em>`;
+    document.getElementById('pageSub').textContent    = `${crop.total_cycle_days}-day lifecycle · ${crop.name} crop analytics`;
+
+    doAlert(crop, today, allocation);
+    doKPIs(allocation, today, summary);
+    doLine(chart_data);
+    doGauge(allocation);
+    doSessions(today);
+    doDonut(summary);
+    doWeekly(weekly, chart_data);
+    doCompare(chart_data, summary);
+    doDev(chart_data);
+    doLifecycle(crop, today);
+    doThresh(crop);
+  }
+
+  function doAlert(crop, today, alloc) {
+    if (alloc.percent_used >= 90)
+      showAlert('danger', 'Quota Critical:', ` ${alloc.percent_used}% consumed. Only ${lk(alloc.remaining)} left this month.`);
+    else if (today.is_over)
+      showAlert('danger', 'Over-watered today:', ` Applied ${lk(today.total)} — optimal is ${lk(today.optimal_today)}.`);
+    else if (today.is_under && today.total > 0)
+      showAlert('warning', 'Under-watered:', ` Applied ${lk(today.total)} — field needs ${lk(today.optimal_today)}.`);
+    else if (today.is_optimal && today.total > 0)
+      showAlert('success', 'On track:', ` Today's irrigation is within the optimal range for this crop.`);
+  }
+
+  function showAlert(type, title, msg) {
+    const box = document.getElementById('alertBox');
+    box.className = 'alert-strip ' + type;
+    box.style.display = 'block';
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertMsg').textContent   = msg;
+  }
+
+  function doKPIs(alloc, today, summary) {
+    const e   = summary.efficiency;
+    const ec  = e >= 80 ? 'green' : e >= 50 ? 'amber' : 'red';
+    document.getElementById('kpiRow').innerHTML = `
+      <div class="kpi">
+        <span class="kpi-label">Month Used</span>
+        <div class="kpi-value red">${lk(alloc.month_used)}</div>
+        <div class="kpi-note ${alloc.percent_used>80?'down':'up'}">${alloc.percent_used}% of allocation</div>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Remaining</span>
+        <div class="kpi-value green">${lk(alloc.remaining)}</div>
+        <div class="kpi-note">of ${lk(alloc.allocated_litres)} total</div>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Today Applied</span>
+        <div class="kpi-value">${lk(today.total)}</div>
+        <div class="kpi-note">${today.sessions.length} session(s) · opt. ${lk(today.optimal_today)}</div>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Avg / Day</span>
+        <div class="kpi-value amber">${lk(summary.avg_daily)}</div>
+        <div class="kpi-note ${summary.avg_daily>summary.avg_optimal?'down':'up'}">
+          ${summary.avg_daily>summary.avg_optimal?'↑ over optimal':'↓ under optimal'}
+        </div>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Efficiency</span>
+        <div class="kpi-value ${ec}">${e}%</div>
+        <div class="kpi-note">${e>=80?'Efficient ✅':e>=50?'Moderate':'Wasteful ❌'}</div>
+      </div>
+    `;
+  }
+
+  function doLine(cd) {
+    if (cLine) cLine.destroy();
+    const ctx  = document.getElementById('lineChart').getContext('2d');
+    const lbls = cd.daily_series.map(d => fd(d.date));
+    const act  = cd.daily_series.map(d => d.actual || null);
+    const opt  = cd.daily_series.map(d => d.optimal);
+    const plat = cd.platform_series.map(d => d.avg);
+
+    const grad = ctx.createLinearGradient(0,0,0,280);
+    grad.addColorStop(0, 'rgba(16,185,129,0.18)');
+    grad.addColorStop(1, 'rgba(16,185,129,0)');
+
+    cLine = new Chart(ctx, {
+      type:'line',
+      data:{
+        labels:lbls,
+        datasets:[
+          { label:'Applied', data:act, borderColor:'#10b981', backgroundColor:grad,
+            fill:true, tension:0.4, pointRadius:2, borderWidth:2.5, spanGaps:true },
+          { label:'Optimal', data:opt, borderColor:'rgba(16,185,129,0.35)',
+            borderDash:[6,4], fill:false, tension:0.3, pointRadius:0, borderWidth:1 },
+          { label:'Platform avg', data:plat, borderColor:'rgba(255,255,255,0.18)',
+            borderDash:[4,6], fill:false, tension:0.3, pointRadius:0, borderWidth:1 }
+        ]
+      },
+      options:{
+        responsive:true,
+        interaction:{mode:'index',intersect:false},
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{label:c=>`  ${c.dataset.label}: ${N(c.parsed.y||0)} L`}}
+        },
+        scales:{
+          x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:10}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>`${(v/1000).toFixed(1)}k`}}
+        }
+      }
+    });
+
+    document.getElementById('lineLegend').innerHTML = `
+      <div class="leg"><div class="leg-sq" style="background:#10b981"></div>Applied</div>
+      <div class="leg"><div class="leg-sq" style="background:rgba(16,185,129,0.4)"></div>Optimal</div>
+      <div class="leg"><div class="leg-sq" style="background:rgba(255,255,255,0.25)"></div>Platform avg</div>
+    `;
+  }
+
+  function doGauge(alloc) {
+    if (cGauge) cGauge.destroy();
+    const pct   = Math.min(alloc.percent_used, 100);
+    const color = pct>=90?'#ef4444':pct>=70?'#f59e0b':'#10b981';
+    cGauge = new Chart(document.getElementById('gaugeChart').getContext('2d'), {
+      type:'doughnut',
+      data:{datasets:[{
+        data:[pct, 100-pct],
+        backgroundColor:[color,'rgba(255,255,255,0.05)'],
+        borderWidth:0, circumference:260, rotation:230
+      }]},
+      options:{cutout:'80%',plugins:{legend:{display:false},tooltip:{enabled:false}}}
+    });
+    document.getElementById('gaugePct').textContent = `${pct}%`;
+    document.getElementById('gaugePct').style.color = color;
+    document.getElementById('gsUsed').textContent   = lk(alloc.month_used);
+    document.getElementById('gsLeft').textContent   = lk(alloc.remaining);
+    document.getElementById('gsTotal').textContent  = lk(alloc.allocated_litres);
+  }
+
+  function doSessions(today) {
+    document.getElementById('todayHead').textContent =
+      `Today's Sessions — ${today.date} · ${lk(today.total)} total`;
+    const area = document.getElementById('sessionArea');
+    if (!today.sessions.length) {
+      area.innerHTML = '<div class="nodata">No irrigation sessions logged today.</div>';
+      return;
+    }
+    area.innerHTML = `
+      <table class="st">
+        <thead><tr>
+          <th>Time</th><th>Applied (L)</th><th>Duration</th><th>Notes</th><th>vs Optimal</th>
+        </tr></thead>
+        <tbody>
+          ${today.sessions.map(s => {
+            const pct = today.optimal_today>0 ? ((s.litres_used/today.optimal_today)*100).toFixed(0) : '–';
+            const cls = parseFloat(pct)>110 ? 'over' : parseFloat(pct)<70 ? 'under' : 'ok';
+            return `
+              <tr>
+                <td>${s.session_time || ft(s.logged_at)}</td>
+                <td><strong>${N(s.litres_used)}</strong></td>
+                <td>${s.duration_min ? s.duration_min+'min' : '–'}</td>
+                <td style="color:var(--text-muted)">${s.notes||'–'}</td>
+                <td class="${cls}">${pct}%</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function doDonut(summary) {
+    if (cDonut) cDonut.destroy();
+    const { optimal_days, over_days, under_days, active_days } = summary;
+    const no_log = days - active_days;
+    cDonut = new Chart(document.getElementById('donutChart').getContext('2d'), {
+      type:'doughnut',
+      data:{
+        labels:['Optimal','Over','Under','No Log'],
+        datasets:[{
+          data:[optimal_days,over_days,under_days,no_log],
+          backgroundColor:['rgba(16,185,129,0.75)','rgba(239,68,68,0.75)','rgba(245,158,11,0.75)','rgba(255,255,255,0.06)'],
+          borderColor:['#10b981','#ef4444','#f59e0b','rgba(255,255,255,0.08)'],
+          borderWidth:1, hoverOffset:6
+        }]
+      },
+      options:{cutout:'65%',plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>`  ${c.label}: ${c.parsed} day(s)`}}
+      }}
+    });
+    document.getElementById('donutCenter').textContent = optimal_days;
+    document.getElementById('donutStats').innerHTML = [
+      {v:optimal_days,l:'Optimal',   c:'#10b981'},
+      {v:over_days,   l:'Over-water',c:'#ef4444'},
+      {v:under_days,  l:'Under',     c:'#f59e0b'},
+      {v:no_log,      l:'No Log',    c:'rgba(255,255,255,0.2)'}
+    ].map(s=>`
+      <div class="drow">
+        <div class="dlbl"><div class="ddot" style="background:${s.c}"></div>${s.l}</div>
+        <div class="dval" style="color:${s.c}">${s.v}</div>
+      </div>
+    `).join('');
+  }
+
+  function doWeekly(weekly, cd) {
+    if (cWeekly) cWeekly.destroy();
+    if (!weekly || !weekly.length) return;
+    const pm={};
+    cd.platform_series.forEach(p=>{ if(p.avg) pm[p.date]=p.avg; });
+    const platWk = weekly.map(w=>{
+      const vs=(w.dates||[]).map(d=>pm[d]).filter(v=>v);
+      return vs.length ? Math.round(vs.reduce((a,b)=>a+b,0)) : null;
+    });
+    cWeekly = new Chart(document.getElementById('weeklyBar').getContext('2d'), {
+      type:'bar',
+      data:{
+        labels:weekly.map((_,i)=>`Week ${i+1}`),
+        datasets:[
+          {label:'Actual', data:weekly.map(w=>w.actual_total),
+            backgroundColor:'rgba(16,185,129,0.4)',borderColor:'#10b981',borderWidth:1,borderRadius:2,order:2},
+          {label:'Optimal',data:weekly.map(w=>w.optimal_total),
+            backgroundColor:'rgba(255,255,255,0.06)',borderColor:'rgba(255,255,255,0.15)',borderWidth:1,borderRadius:2,order:3},
+          {label:'Platform',data:platWk,type:'line',
+            borderColor:'rgba(255,255,255,0.2)',borderDash:[4,4],borderWidth:1.5,
+            pointRadius:2,fill:false,spanGaps:true,order:1}
+        ]
+      },
+      options:{
+        responsive:true,interaction:{mode:'index',intersect:false},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:c=>`  ${c.dataset.label}: ${N(c.parsed.y||0)} L`}}
+        },
+        scales:{
+          x:{grid:{display:false}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>`${(v/1000).toFixed(0)}k`}}
+        }
+      }
+    });
+  }
+
+  function doCompare(cd, summary) {
+    const platArr = cd.platform_series.filter(d=>d.avg);
+    const platAvg = platArr.length
+      ? Math.round(platArr.reduce((s,d)=>s+d.avg,0)/platArr.length) : null;
+    const barMax = Math.max(summary.avg_daily, platAvg||0, summary.avg_optimal) * 1.2;
+    document.getElementById('cmpList').innerHTML = [
+      {l:'Your daily avg',  v:summary.avg_daily,   c:'#10b981'},
+      {l:'Other farmers',   v:platAvg,             c:'rgba(255,255,255,0.35)'},
+      {l:'Optimal target',  v:summary.avg_optimal, c:'rgba(16,185,129,0.4)'},
+    ].filter(r=>r.v).map(r=>`
+      <div>
+        <div class="cmp-meta">
+          <span class="cmp-lbl">${r.l}</span>
+          <span class="cmp-val">${lk(r.v)}</span>
+        </div>
+        <div class="cmp-track">
+          <div class="cmp-fill" style="width:${Math.round((r.v/barMax)*100)}%;background:${r.c}"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function doDev(cd) {
+    if (cDev) cDev.destroy();
+    const devs = cd.daily_series.map(d => d.actual>0 ? d.actual - d.optimal : null);
+    cDev = new Chart(document.getElementById('devChart').getContext('2d'), {
+      type:'bar',
+      data:{
+        labels:cd.daily_series.map(d=>fd(d.date)),
+        datasets:[{
+          label:'Deviation',
+          data:devs,
+          backgroundColor:devs.map(v=>{
+            if(v===null) return 'transparent';
+            if(v>0)  return 'rgba(239,68,68,0.6)';
+            if(v<0)  return 'rgba(245,158,11,0.6)';
+            return 'rgba(16,185,129,0.6)';
+          }),
+          borderColor:devs.map(v=>{
+            if(v===null) return 'transparent';
+            if(v>0)  return '#ef4444';
+            if(v<0)  return '#f59e0b';
+            return '#10b981';
+          }),
+          borderWidth:1, borderRadius:2
+        }]
+      },
+      options:{
+        responsive:true,interaction:{mode:'index',intersect:false},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:c=>c.parsed.y!==null?`  ${c.parsed.y>=0?'+':''}${N(c.parsed.y)} L vs optimal`:null}}
+        },
+        scales:{
+          x:{grid:{display:false},ticks:{maxTicksLimit:10}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>`${v>=0?'+':''}${(v/1000).toFixed(1)}k`}}
+        }
+      }
+    });
+  }
+
+  function doLifecycle(crop, today) {
+    if (!crop.stages) return;
+    const s   = crop.stages;
+    const tot = crop.total_cycle_days;
+    const stages = [
+      {name:'Initial', days:s.initial.days, water:s.initial.water, bg:'rgba(16,185,129,0.35)'},
+      {name:'Growth',  days:s.growth.days,  water:s.growth.water,  bg:'rgba(16,185,129,0.55)'},
+      {name:'Mid',     days:s.mid.days,     water:s.mid.water,     bg:'rgba(16,185,129,0.75)'},
+      {name:'Late',    days:s.late.days,    water:s.late.water,    bg:'rgba(16,185,129,0.45)'},
+    ];
+    const dayPct = Math.min((today.days_since_planting/tot)*100, 100);
+
+    document.getElementById('lifecycleContent').innerHTML = `
+      <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:1.2rem;text-transform:uppercase;letter-spacing:1px;">
+        Day ${today.days_since_planting} of ${tot}
+        · Stage: <span style="color:var(--text-main)">${today.current_stage}</span>
+        · Today's optimal: <span style="color:var(--accent-primary)">${lk(today.optimal_today)}</span>
+      </div>
+      <div class="lc-bar">
+        ${stages.map(sg=>`<div style="flex:${sg.days};background:${sg.bg}" title="${sg.name} (${sg.days}d)"></div>`).join('')}
+      </div>
+      <div class="lc-labels">
+        ${stages.map(sg=>`<div style="flex:${sg.days}">${sg.name} · ${sg.water}L/m²</div>`).join('')}
+      </div>
+      <div style="margin-top:0.8rem;height:2px;background:var(--card-border);position:relative;">
+        <div style="position:absolute;left:${dayPct}%;transform:translateX(-50%);
+          width:2px;height:8px;background:var(--accent-primary);top:-3px;border-radius:1px"></div>
+      </div>
+      <div style="font-size:0.55rem;color:var(--accent-primary);text-transform:uppercase;letter-spacing:1px;
+        margin-top:0.4rem;padding-left:${Math.min(dayPct,96)}%">Today</div>
+    `;
+  }
+
+  function doThresh(crop) {
+    document.getElementById('threshHead').textContent =
+      `Water Reference — ${crop.name} · ${crop.total_cycle_days}-day lifecycle`;
+    document.getElementById('threshGrid').innerHTML = [
+      {icon:'💧',name:'Min Soil Moisture',val:`${crop.minMoisture}%`,  desc:'Minimum required',       c:'var(--warning)'},
+      {icon:'🌊',name:'Max Soil Moisture',val:`${crop.maxMoisture}%`,  desc:'Maximum safe level',     c:'var(--success)'},
+      {icon:'🌡️',name:'Temperature Range',val:`${crop.temperatureRange.min}–${crop.temperatureRange.max}°C`,desc:'Optimal grow temp',c:'rgba(255,255,255,0.6)'},
+      {icon:'📅',name:'Cycle Length',      val:`${crop.total_cycle_days}d`,desc:'Full lifecycle',         c:'rgba(255,255,255,0.6)'},
+    ].map(t=>`
+      <div class="tc" style="border-top-color:${t.c}">
+        <div class="tc-icon">${t.icon}</div>
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-val" style="color:${t.c}">${t.val}</div>
+        <div class="tc-desc">${t.desc}</div>
+      </div>
+    `).join('');
+  }
+
+  // Helpers
+  function N(n)  { return Math.round(n||0).toLocaleString('en-IN'); }
+  function lk(n) { return n>=1000 ? `${((n||0)/1000).toFixed(1)}k L` : `${N(n)} L`; }
+  function fd(s) { return new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}); }
+  function ft(s) { return new Date(s).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}); }
+
+  loadData();
+</script>
+</body>
+</html>
