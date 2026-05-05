@@ -13,7 +13,6 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
-
     <style>
         /* Base Variables - Ensures the design works flawlessly */
         :root {
@@ -138,8 +137,6 @@
             padding: var(--spacing-xl) var(--spacing-md);
             border-bottom: 1px solid var(--card-border);
             animation: fadeUp 1s ease-out;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             align-items: center;
             gap: var(--spacing-lg);
             min-height: 90vh;
@@ -194,10 +191,13 @@
         /* Editorial Layout */
         .editorial-row {
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: var(--spacing-md);
+            grid-template-columns: repeat(2, 1fr);
+            /* gap: var(--spacing-md); */
             margin-bottom: var(--spacing-lg);
+            gap: 5px;
+            width: 800px;
         }
+
 
         .meta-label {
             grid-column: span 3;
@@ -220,7 +220,8 @@
 
         /* Bento Grid */
         .bento-grid {
-            display: grid;
+            display: flex;
+            flex-direction: column;
             grid-template-columns: repeat(12, 1fr);
             gap: 1px;
             background: var(--card-border);
@@ -231,7 +232,8 @@
 
         .bento-item {
             background: var(--bg-main);
-            padding: var(--spacing-lg) var(--spacing-md);
+            /* padding: var(--spacing-lg) var(--spacing-md); */
+            padding: 20px;;
             grid-column: span 4;
             transition: background 0.3s ease;
             display: flex;
@@ -330,6 +332,37 @@
                 text-align: center;
             }
         }
+        .collage {
+            display: grid;
+            flex-direction: row;
+            gap: var(--spacing-md);
+        }
+        .photo-slider .photos{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+        }
+        .photo-slider .photos img{
+            width: 270px;
+            height: 180px;
+            border-radius: 12px;
+        }
+        .upper{
+            display: flex;
+            flex-direction: row;
+            gap: var(--spacing-xl);
+            justify-content: space-evenly;
+            width: 100%;
+        }
+        .top{
+            display: flex;
+            flex-direction: row;
+            gap: var(--spacing-xl);
+            justify-content: space-evenly;
+            width: 100%;
+            text-align: center;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -349,24 +382,30 @@
 
     <main>
         <section class="hero-section">
-            <h1 class="huge-title">Accelerating <br> <span class="serif"
-                    style="font-style: italic; font-weight: 400;">Smarter</span> <br> Agriculture.</h1>
-
-            <div class="image-wrapper" style="border: 1px solid var(--text-main);">
-                <img src="1.webp" alt="Futuristic Agriculture">
+            <div class="top">
+                <h1 class="huge-title">Accelerating <br> <span class="serif" style="font-style: italic; font-weight: 400;">Smarter</span> <br> Agriculture.</h1>
+                <div class="image-wrapper" style="border: 1px solid var(--text-main);">
+                    <img src="1.webp" alt="Futuristic Agriculture" >
+                </div>     
             </div>
-
-                <div class="editorial-row">
-                    <div class="meta-label">Philosophy / 01</div>
+            <div class="upper">
+                <div class="editorial-row" style="margin-top: 130px;">
+                    <div class="collage">
+                        <div class="meta-label">Philosophy / 01</div>
+                        <div class="im"> <img src="agri1.jpeg" alt="Philosophy" width="250px" height="200px"></div>
+                    </div>
                     <div class="content-main">
                         We believe in a future where data and nature coexist in perfect harmony. Our platform bridges
                         the gap between complex agricultural utility and refined digital design, creating brand systems
                         for the world's most disruptive farmers.
                     </div>
                 </div>
-
+                
                 <div class="editorial-row" style="margin-top: var(--spacing-xl);">
-                    <div class="meta-label">Utility / 02</div>
+                    <div class="collage">
+                        <div class="meta-label">Utility / 02</div>
+                        <div class="im"> <img src="agri2.jpeg" alt="Utility" width="250px" height="200px"></div>
+                    </div>
                     <div class="content-main">
                         <div class="bento-grid">
                             <div class="bento-item">
@@ -386,7 +425,17 @@
                         </div>
                     </div>
                 </div>
+            </div>
         </section>
+        <div class="photo-slider">
+            <div class="photos">
+                <img src="agri2.jpeg">
+                <img src="agri3.jpeg">
+                <img src="agri4.jpeg">
+                <img src="agri5.jpeg">
+                <img src="agri6.jpeg">
+            </div>
+        </div>
 
         <section class="cta-section">
             <h2>Ready to <span style="font-style: italic;">cultivate</span>?</h2>
@@ -397,11 +446,23 @@
     <footer>
         <div>© 2026 Irrigation Hub Studio</div>
         <div style="display: flex; gap: 2rem;">
-            <span>Terms</span>
-            <span>Privacy</span>
-            <span>Contact</span>
+            <span> <a href="terms.html" style="text-decoration: none;">Terms</a></span>
+            <span> <a href="privacy.html" style="text-decoration: none;">Privacy</a></span>
+            <span> <a href="contact.html" style="text-decoration: none;">Contact</a></span>
         </div>
     </footer>
+    <script>
+        const slider = document.querySelector('.photo-slider .photos');
+        let img_array = ["agri1.jpeg", "agri2.jpeg", "agri3.jpeg", "agri4.jpeg", "agri5.jpeg", "agri6.jpeg", "agri7.jpg", "agri8.jpeg", "agri9.jpeg", "agri10.jpeg"];
+        let index = 0;
+        setInterval(() => {
+            index = (index + 1) % img_array.length;
+            slider.querySelectorAll('img').forEach((img, i) => {
+                img.src = img_array[(index + i) % img_array.length];
+            });
+        }, 3000);
+
+    </script>
 </body>
 
 </html>
