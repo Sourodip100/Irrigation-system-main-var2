@@ -385,7 +385,7 @@
             <div class="top">
                 <h1 class="huge-title">Accelerating <br> <span class="serif" style="font-style: italic; font-weight: 400;">Smarter</span> <br> Agriculture.</h1>
                 <div class="image-wrapper" style="border: 1px solid var(--text-main);">
-                    <img src="1.webp" alt="Futuristic Agriculture" >
+                    <img src="1.webp" alt="Futuristic Agriculture">
                 </div>     
             </div>
             <div class="upper">
@@ -455,12 +455,46 @@
         const slider = document.querySelector('.photo-slider .photos');
         let img_array = ["agri1.jpeg", "agri2.jpeg", "agri3.jpeg", "agri4.jpeg", "agri5.jpeg", "agri6.jpeg", "agri7.jpg", "agri8.jpeg", "agri9.jpeg", "agri10.jpeg"];
         let index = 0;
-        setInterval(() => {
-            index = (index + 1) % img_array.length;
-            slider.querySelectorAll('img').forEach((img, i) => {
-                img.src = img_array[(index + i) % img_array.length];
-            });
-        }, 3000);
+        setTimeout(() =>{
+            slider.querySelectorAll('img')[0].src = img_array[index % img_array.length]; 
+            setInterval(() => {
+                index = (index + 1) % img_array.length;
+                slider.querySelectorAll('img')[0].src = img_array[index % img_array.length]; 
+                // i need to changs the images at different intervals
+            }, 3000);
+        }, 1000);
+        setTimeout(() =>{
+            slider.querySelectorAll('img')[1].src = img_array[(index+5) % img_array.length]; 
+            setInterval(() => {
+                index = (index + 1) % img_array.length;
+                slider.querySelectorAll('img')[1].src = img_array[index % img_array.length]; 
+                // i need to changs the images at different intervals
+            }, 3000);
+        }, 2000);
+        setTimeout(() =>{
+            slider.querySelectorAll('img')[2].src = img_array[(index+6) % img_array.length]; 
+            setInterval(() => {
+                index = (index + 1) % img_array.length;
+                slider.querySelectorAll('img')[2].src = img_array[index % img_array.length]; 
+                // i need to changs the images at different intervals
+            }, 3000);
+        }, 1000);
+        setTimeout(() =>{
+            slider.querySelectorAll('img')[3].src = img_array[(index+7) % img_array.length]; 
+            setInterval(() => {
+                index = (index + 1) % img_array.length;
+                slider.querySelectorAll('img')[3].src = img_array[index % img_array.length]; 
+                // i need to changs the images at different intervals
+            }, 3000);
+        }, 2000);
+        setTimeout(() =>{
+            slider.querySelectorAll('img')[4].src = img_array[(index+8) % img_array.length]; 
+            setInterval(() => {
+                index = (index + 1) % img_array.length;
+                slider.querySelectorAll('img')[4].src = img_array[index % img_array.length]; 
+                // i need to changs the images at different intervals
+            }, 3000);
+        }, 1000);
 
     </script>
 </body>
