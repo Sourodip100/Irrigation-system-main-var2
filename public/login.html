@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | Irrigation Hub Studio</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .auth-layout {
             display: grid;
@@ -75,6 +76,36 @@
             .auth-layout { grid-template-columns: 1fr; }
             .auth-hero { display: none; }
         }
+        .password-wrapper {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .password-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            padding: 1rem 0;
+            font-size: 1.2rem;
+            outline: none;
+        }
+
+        .password-wrapper button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding-left: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -101,8 +132,35 @@
                 </div>
                 <div class="auth-input-group">
                     <label>Protocol / Password</label>
-                    <input type="password" id="password" required placeholder="••••••••">
+
+                    <div class="password-wrapper">
+                        <input type="password" id="password" required placeholder="••••••••">
+                        
+                        
+                        <button type="button" id="toggle-password">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
                 </div>
+                <script>
+                    const toggleBtn = document.getElementById('toggle-password');
+                    const passwordInput = document.getElementById('password');
+
+                    toggleBtn.addEventListener('click', function () {
+                        const isHidden = passwordInput.type === 'password';
+
+                        passwordInput.type = isHidden ? 'text' : 'password';
+
+                        // Change icon
+                        this.innerHTML = isHidden 
+                            ? '<i data-lucide="eye-off"></i>' 
+                            : '<i data-lucide="eye"></i>';
+
+                        lucide.createIcons(); // re-render icons
+                    });
+
+                    lucide.createIcons(); // initial render
+                </script>
                 
                 <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem;">
                     <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.5rem;">Initialize Session</button>
