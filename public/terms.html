@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Terms of Service | Irrigation Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"/>
+    <style>
+        :root {
+            --bg-main: #0a0a0a; --bg-secondary: #121212;
+            --text-main: #fcfcfc; --text-muted: #808080;
+            --card-border: rgba(255,255,255,0.08); --accent-primary: #10b981;
+            --spacing-sm:1rem; --spacing-md:2rem; --spacing-lg:4rem; --spacing-xl:8rem;
+            --font-sans:'Inter',sans-serif; --font-serif:'Playfair Display',serif;
+        }
+        body.light-mode {
+            --bg-main:#fcfcfc; --bg-secondary:#f5f5f5;
+            --text-main:#0a0a0a; --text-muted:#666; --card-border:rgba(0,0,0,0.08);
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:var(--font-sans);background:var(--bg-main);color:var(--text-main);line-height:1.6;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+        .serif{font-family:var(--font-serif)}
+
+        .editorial-nav{
+            padding:1.5rem var(--spacing-md);display:flex;justify-content:space-between;align-items:center;
+            position:sticky;top:0;background:rgba(10,10,10,0.85);backdrop-filter:blur(12px);
+            z-index:100;border-bottom:1px solid var(--card-border);transition:background 0.3s;
+        }
+        body.light-mode .editorial-nav{background:rgba(252,252,252,0.85)}
+        .nav-links{display:flex;gap:2.5rem;font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;align-items:center;font-weight:600}
+        .nav-links a{text-decoration:none;color:var(--text-main);transition:opacity 0.2s}
+        .nav-links a:hover{opacity:0.6}
+        .btn{background:none;border:none;color:var(--text-main);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:2px;font-size:0.75rem;font-weight:600}
+
+        .page-wrap{max-width:800px;margin:0 auto;padding:var(--spacing-lg) var(--spacing-md)}
+
+        .page-header{margin-bottom:var(--spacing-lg);border-bottom:1px solid var(--card-border);padding-bottom:var(--spacing-md)}
+        .eyebrow{font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent-primary);margin-bottom:1rem}
+        .page-title{font-family:var(--font-serif);font-size:clamp(2.5rem,6vw,4rem);font-weight:400;line-height:1;margin-bottom:1rem}
+        .page-meta{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+
+        .toc{border:1px solid var(--card-border);padding:var(--spacing-md);margin-bottom:var(--spacing-lg);border-radius:4px}
+        .toc-title{font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:1rem}
+        .toc ol{padding-left:1.2rem;display:flex;flex-direction:column;gap:0.5rem}
+        .toc li{font-size:0.85rem}
+        .toc a{color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+        .toc a:hover{color:var(--text-main)}
+
+        .section{margin-bottom:var(--spacing-lg)}
+        .section h2{font-family:var(--font-serif);font-size:1.8rem;font-weight:400;margin-bottom:1.5rem;padding-top:var(--spacing-md);border-top:1px solid var(--card-border)}
+        .section p{color:var(--text-muted);font-size:0.95rem;line-height:1.8;margin-bottom:1rem}
+        .section ul{color:var(--text-muted);font-size:0.95rem;line-height:1.8;padding-left:1.5rem;margin-bottom:1rem}
+        .section ul li{margin-bottom:0.5rem}
+        .section strong{color:var(--text-main)}
+
+        .highlight-box{border-left:2px solid var(--accent-primary);padding:1rem 1.5rem;margin:1.5rem 0;background:rgba(16,185,129,0.05)}
+        .highlight-box p{margin:0;color:var(--text-muted)}
+
+        footer{padding:var(--spacing-md);display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);font-weight:600;border-top:1px solid var(--card-border)}
+        .footer-links{display:flex;gap:2rem}
+        .footer-links a{color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+        .footer-links a:hover{color:var(--text-main)}
+    </style>
+</head>
+<body>
+    <script src="theme.js"></script>
+
+    <nav class="editorial-nav">
+        <a href="index.html" class="serif" style="font-size:1.75rem;letter-spacing:-1px;font-weight:600;text-decoration:none;color:var(--text-main)">
+            Irrigation Hub<span style="font-size:1rem;vertical-align:super">®</span>
+        </a>
+        <div class="nav-links">
+            <button id="theme-toggle" class="btn">Toggle Mood</button>
+            <a href="login.html">Login</a>
+            <a href="register.html" style="color:#10b981">Join</a>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+
+        <div class="page-header">
+            <div class="eyebrow">Legal</div>
+            <h1 class="page-title serif">Terms of <em>Service.</em></h1>
+            <div class="page-meta">Effective Date: 1 January 2026 &nbsp;·&nbsp; Last Updated: 1 April 2026</div>
+        </div>
+
+        <div class="toc">
+            <div class="toc-title">Table of Contents</div>
+            <ol>
+                <li><a href="#acceptance">Acceptance of Terms</a></li>
+                <li><a href="#services">Description of Services</a></li>
+                <li><a href="#accounts">User Accounts</a></li>
+                <li><a href="#conduct">Acceptable Use</a></li>
+                <li><a href="#data">Data & Privacy</a></li>
+                <li><a href="#intellectual">Intellectual Property</a></li>
+                <li><a href="#liability">Limitation of Liability</a></li>
+                <li><a href="#termination">Termination</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ol>
+        </div>
+
+        <div class="section" id="acceptance">
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing or using the Irrigation Hub platform ("Service"), you confirm that you are at least 18 years of age and have the legal authority to enter into this agreement on behalf of yourself or the organisation you represent.</p>
+            <div class="highlight-box">
+                <p><strong>If you do not agree to these Terms, please do not access or use the Service.</strong> Continued use after any modification constitutes acceptance of the revised terms.</p>
+            </div>
+        </div>
+
+        <div class="section" id="services">
+            <h2>2. Description of Services</h2>
+            <p>Irrigation Hub provides an agricultural management platform that includes:</p>
+            <ul>
+                <li>Real-time soil moisture and weather monitoring</li>
+                <li>Automated irrigation scheduling and ESP hardware integration</li>
+                <li>Crop lifecycle management and water consumption analytics</li>
+                <li>Admin dashboard and multi-farmer management tools</li>
+                <li>Push notifications and email alerting systems</li>
+            </ul>
+            <p>We reserve the right to modify, suspend, or discontinue any part of the Service at any time with reasonable notice to registered users.</p>
+        </div>
+
+        <div class="section" id="accounts">
+            <h2>3. User Accounts</h2>
+            <p>To access the full features of the platform, you must create an account. You are responsible for:</p>
+            <ul>
+                <li>Maintaining the confidentiality of your login credentials</li>
+                <li>All activities that occur under your account</li>
+                <li>Providing accurate and current information during registration and profile updates</li>
+                <li>Notifying us immediately of any unauthorised use of your account</li>
+            </ul>
+            <p>We reserve the right to suspend or terminate accounts that violate these Terms or are used fraudulently.</p>
+        </div>
+
+        <div class="section" id="conduct">
+            <h2>4. Acceptable Use</h2>
+            <p>You agree not to use the Service to:</p>
+            <ul>
+                <li>Upload or transmit any malicious code, viruses, or harmful data</li>
+                <li>Attempt to gain unauthorised access to any server, database, or other user's account</li>
+                <li>Use the platform to distribute spam, unsolicited communications, or misleading information</li>
+                <li>Reverse-engineer, decompile, or extract source code from the platform</li>
+                <li>Violate any applicable local, state, national, or international law</li>
+            </ul>
+        </div>
+
+        <div class="section" id="data">
+            <h2>5. Data & Privacy</h2>
+            <p>Your use of the Service is also governed by our <a href="privacy.html" style="color:var(--accent-primary)">Privacy Policy</a>, which is incorporated into these Terms by reference. Key points:</p>
+            <ul>
+                <li>Field sensor data, GPS coordinates, and usage logs are stored securely in our MongoDB cloud database</li>
+                <li>We do not sell your personal or farm data to third parties</li>
+                <li>Anonymised, aggregated data may be used to improve platform features and provide platform-wide comparisons</li>
+                <li>You may request deletion of your account and associated data at any time via the Contact page</li>
+            </ul>
+        </div>
+
+        <div class="section" id="intellectual">
+            <h2>6. Intellectual Property</h2>
+            <p>All content, design, code, and branding on the Irrigation Hub platform is the property of Irrigation Hub Studio and protected under applicable intellectual property laws. You are granted a limited, non-exclusive, non-transferable licence to use the Service for its intended agricultural management purposes.</p>
+            <p>Your farm data, field records, and uploaded content remain your property. By using the Service, you grant us a limited licence to process and store that data solely to provide the Service.</p>
+        </div>
+
+        <div class="section" id="liability">
+            <h2>7. Limitation of Liability</h2>
+            <p>The Service is provided <strong>"as is"</strong> without warranties of any kind. Irrigation Hub Studio shall not be liable for:</p>
+            <ul>
+                <li>Crop losses, missed irrigation events, or hardware failures caused by connectivity issues</li>
+                <li>Inaccurate weather data provided by third-party meteorological services</li>
+                <li>Data loss due to force majeure events, cyberattacks, or circumstances beyond our reasonable control</li>
+                <li>Any indirect, incidental, special, or consequential damages</li>
+            </ul>
+            <div class="highlight-box">
+                <p>Our total liability to you for any claim shall not exceed the amount you paid us in the 3 months preceding the claim, or ₹1,000, whichever is greater.</p>
+            </div>
+        </div>
+
+        <div class="section" id="termination">
+            <h2>8. Termination</h2>
+            <p>Either party may terminate this agreement at any time. You may delete your account through the profile settings. We may terminate or suspend access immediately, without notice, if we determine you have violated these Terms.</p>
+            <p>Upon termination, your right to use the Service ceases immediately. Provisions that by their nature should survive termination (including liability limitations and intellectual property rights) shall continue to apply.</p>
+        </div>
+
+        <div class="section" id="contact">
+            <h2>9. Contact</h2>
+            <p>For questions about these Terms, please reach us at:</p>
+            <ul>
+                <li><strong>Email:</strong> legal@irrigationhub.io</li>
+                <li><strong>Address:</strong> Irrigation Hub Studio, Sector 62, Noida, Uttar Pradesh — 201309</li>
+                <li><strong>Contact Form:</strong> <a href="contact.html" style="color:var(--accent-primary)">contact.html</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        <div>© 2026 Irrigation Hub Studio</div>
+        <div class="footer-links">
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Contact | Irrigation Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"/>
+    <style>
+        :root{--bg-main:#0a0a0a;--bg-secondary:#121212;--text-main:#fcfcfc;--text-muted:#808080;--card-border:rgba(255,255,255,0.08);--accent-primary:#10b981;--spacing-sm:1rem;--spacing-md:2rem;--spacing-lg:4rem;--spacing-xl:8rem;--font-sans:'Inter',sans-serif;--font-serif:'Playfair Display',serif}
+        body.light-mode{--bg-main:#fcfcfc;--bg-secondary:#f5f5f5;--text-main:#0a0a0a;--text-muted:#666;--card-border:rgba(0,0,0,0.08)}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:var(--font-sans);background:var(--bg-main);color:var(--text-main);line-height:1.6;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+        .serif{font-family:var(--font-serif)}
+        .editorial-nav{padding:1.5rem var(--spacing-md);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:rgba(10,10,10,0.85);backdrop-filter:blur(12px);z-index:100;border-bottom:1px solid var(--card-border);transition:background 0.3s}
+        body.light-mode .editorial-nav{background:rgba(252,252,252,0.85)}
+        .nav-links{display:flex;gap:2.5rem;font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;align-items:center;font-weight:600}
+        .nav-links a{text-decoration:none;color:var(--text-main);transition:opacity 0.2s}
+        .nav-links a:hover{opacity:0.6}
+        .btn{background:none;border:none;color:var(--text-main);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:2px;font-size:0.75rem;font-weight:600}
+
+        .page-wrap{max-width:1100px;margin:0 auto;padding:var(--spacing-lg) var(--spacing-md)}
+        .page-header{margin-bottom:var(--spacing-lg)}
+        .eyebrow{font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent-primary);margin-bottom:1rem}
+        .page-title{font-family:var(--font-serif);font-size:clamp(2.5rem,6vw,5rem);font-weight:400;line-height:1;margin-bottom:1.5rem}
+        .page-sub{font-size:0.9rem;color:var(--text-muted);max-width:500px;line-height:1.7}
+
+        .contact-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:var(--spacing-lg);margin-top:var(--spacing-lg);border-top:1px solid var(--card-border);padding-top:var(--spacing-lg)}
+
+        /* Info column */
+        .info-col{}
+        .info-block{margin-bottom:var(--spacing-md)}
+        .info-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:0.5rem}
+        .info-value{font-size:0.95rem;color:var(--text-main)}
+        .info-value a{color:var(--accent-primary);text-decoration:none}
+
+        .office-card{border:1px solid var(--card-border);padding:var(--spacing-md);margin-top:var(--spacing-md)}
+        .office-card h3{font-family:var(--font-serif);font-size:1.2rem;font-weight:400;margin-bottom:1rem}
+        .office-card p{font-size:0.85rem;color:var(--text-muted);line-height:1.7}
+
+        /* Form column */
+        .form-col{}
+        .field-group{margin-bottom:1.8rem}
+        .field-group label{display:block;font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:0.6rem}
+        .field-group input,
+        .field-group select,
+        .field-group textarea{
+            width:100%;background:transparent;border:none;
+            border-bottom:1px solid var(--card-border);
+            color:var(--text-main);padding:0.8rem 0;
+            font-size:0.95rem;font-family:var(--font-sans);
+            outline:none;transition:border-color 0.2s;
+            resize:none;
+        }
+        .field-group input:focus,
+        .field-group select:focus,
+        .field-group textarea:focus{border-color:var(--text-main)}
+        .field-group select option{background:#111;color:#fff}
+
+        .submit-btn{
+            background:transparent;border:1px solid var(--text-main);
+            color:var(--text-main);padding:1rem 3rem;
+            font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;
+            cursor:pointer;font-family:var(--font-sans);font-weight:600;
+            transition:background 0.2s,color 0.2s;width:100%;margin-top:0.5rem;
+        }
+        .submit-btn:hover{background:var(--text-main);color:var(--bg-main)}
+        .submit-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+        .success-msg{
+            display:none;padding:1rem 1.5rem;
+            border-left:2px solid var(--accent-primary);
+            background:rgba(16,185,129,0.06);
+            font-size:0.85rem;color:var(--accent-primary);
+            margin-top:1rem;
+        }
+
+        @media(max-width:860px){.contact-grid{grid-template-columns:1fr}}
+
+        footer{padding:var(--spacing-md);display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);font-weight:600;border-top:1px solid var(--card-border)}
+        .footer-links{display:flex;gap:2rem}
+        .footer-links a{color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+        .footer-links a:hover{color:var(--text-main)}
+    </style>
+</head>
+<body>
+    <script src="theme.js"></script>
+    <nav class="editorial-nav">
+        <a href="index.html" class="serif" style="font-size:1.75rem;letter-spacing:-1px;font-weight:600;text-decoration:none;color:var(--text-main)">
+            Irrigation Hub<span style="font-size:1rem;vertical-align:super">®</span>
+        </a>
+        <div class="nav-links">
+            <button id="theme-toggle" class="btn">Toggle Mood</button>
+            <a href="login.html">Login</a>
+            <a href="register.html" style="color:#10b981">Join</a>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="page-header">
+            <div class="eyebrow">Get in Touch</div>
+            <h1 class="page-title serif">Let's <em>Talk.</em></h1>
+            <p class="page-sub">Whether you have a question about features, pricing, data deletion, or just want to say hello — we're here.</p>
+        </div>
+
+        <div class="contact-grid">
+
+            <!-- Left: Info -->
+            <div class="info-col">
+                <div class="info-block">
+                    <div class="info-label">General Enquiries</div>
+                    <div class="info-value"><a href="mailto:hello@irrigationhub.io">hello@irrigationhub.io</a></div>
+                </div>
+                <div class="info-block">
+                    <div class="info-label">Technical Support</div>
+                    <div class="info-value"><a href="mailto:support@irrigationhub.io">support@irrigationhub.io</a></div>
+                </div>
+                <div class="info-block">
+                    <div class="info-label">Privacy & Data Requests</div>
+                    <div class="info-value"><a href="mailto:privacy@irrigationhub.io">privacy@irrigationhub.io</a></div>
+                </div>
+                <div class="info-block">
+                    <div class="info-label">Response Time</div>
+                    <div class="info-value">Within 2 business days</div>
+                </div>
+
+                <div class="office-card">
+                    <h3 class="serif">Our Office</h3>
+                    <p>
+                        Irrigation Hub Studio<br>
+                        4th Floor, Tech Tower, Sector 62<br>
+                        Noida, Uttar Pradesh — 201309<br>
+                        India<br><br>
+                        Mon–Fri, 10:00 AM – 6:00 PM IST
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right: Form -->
+            <div class="form-col">
+                <div class="field-group">
+                    <label>Your Name</label>
+                    <input type="text" id="cName" placeholder="Ramesh Kumar"/>
+                </div>
+                <div class="field-group">
+                    <label>Email Address</label>
+                    <input type="email" id="cEmail" placeholder="you@example.com"/>
+                </div>
+                <div class="field-group">
+                    <label>Subject</label>
+                    <select id="cSubject">
+                        <option value="">— Select a topic —</option>
+                        <option>General Enquiry</option>
+                        <option>Technical Support</option>
+                        <option>Account / Login Issues</option>
+                        <option>Data Deletion Request</option>
+                        <option>Hardware / ESP Integration</option>
+                        <option>Billing & Plans</option>
+                        <option>Partnership / Media</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Message</label>
+                    <textarea id="cMessage" rows="6" placeholder="Describe your question or issue in detail…"></textarea>
+                </div>
+                <button class="submit-btn" id="submitBtn" onclick="submitForm()">Send Message →</button>
+                <div class="success-msg" id="successMsg">
+                    ✓ &nbsp; Message received. We'll get back to you within 2 business days.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div>© 2026 Irrigation Hub Studio</div>
+        <div class="footer-links">
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </footer>
+
+    <script>
+        function submitForm() {
+            const name    = document.getElementById('cName').value.trim();
+            const email   = document.getElementById('cEmail').value.trim();
+            const subject = document.getElementById('cSubject').value;
+            const message = document.getElementById('cMessage').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                alert('Please fill in all fields before sending.');
+                return;
+            }
+            if (!email.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled    = true;
+            btn.textContent = 'Sending…';
+
+            // Simulate sending (replace with real fetch to your backend if needed)
+            setTimeout(() => {
+                btn.style.display = 'none';
+                document.getElementById('successMsg').style.display = 'block';
+
+                // Clear fields
+                document.getElementById('cName').value    = '';
+                document.getElementById('cEmail').value   = '';
+                document.getElementById('cSubject').value = '';
+                document.getElementById('cMessage').value = '';
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
